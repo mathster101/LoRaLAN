@@ -6,7 +6,7 @@ text = "Not only is the Beagle an excellent hunting dog and loyal companion, it 
 
 def foo():
     print("sent")
-    seraph= serial.Serial('/dev/ttyUSB0', 921600, timeout=10)
+    seraph= serial.Serial('/dev/ttyUSB0', 115200, timeout=10)
     mlem = text.encode()
     for i in range(10):
         #print('wrote', mlem)
@@ -19,9 +19,7 @@ def foo():
     seraph.close()
 
 def moo():
-    print("sent")
-    seraph= serial.Serial('/dev/ttyUSB0', 115200, timeout=10)
-    mlem = text.encode()
+    seraph= serial.Serial('/dev/ttyUSB1', 115200, timeout=10)
     counter = 0
     while True:    
         line = seraph.readline()
