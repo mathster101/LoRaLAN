@@ -1,10 +1,8 @@
 import base64
 import select
-import time
 import serial
 import struct
 from fcntl import ioctl
-import select
 
 def openTun(tunName):
     tun = open("/dev/net/tun", "r+b", buffering=0)
@@ -16,6 +14,18 @@ def openTun(tunName):
     ioctl(tun, LINUX_TUNSETIFF, ifs)
     return tun
 
+def readBytes(serialfd):
+    p64 = serialfd.readline()
+    if len(p64) == 0:
+        return b''
+    packet = base64.b64decode(p64)
+    return packet    
+
+def sendBytes(data, serialfd):
+    p64 = base64.b64encode(data)
+    p64 = p64.decode('ascii').encode()
+    serialfd.write(p64)
+
 if __name__ == "__main__":
     tun = openTun(b"tun0")
     serialfd= serial.Serial('/dev/ttyUSB0', 115200, timeout=10)
@@ -26,15 +36,15 @@ if __name__ == "__main__":
         for fd in inputs:
             if fd == tun:
                 packet = tun.read(2000)
-                packetb64 = base64.b64encode(packet).decode('ascii') + '\n'
-                packetb64 = packetb64.encode()
-                serialfd.write(packetb64)
-                print(f"converted packet to {len(packetb64) - 1}+1 bytes")
-                print(packetb64.decode())
+                sendBytes(packet, serialfd)
+                print("________________________")
+                print("FROM TUN")
+                print(packet)
                 
             if fd == serialfd:
-                pass
-                # packetb64 = serialfd.readline().encode('ascii')
-                # packet = base64.b64decode(packetb64)
+                readBytes(serialfd)
+                tun.write(packet)
+                print("________________________")
+                print("FROM SERIAL")
 
                 
