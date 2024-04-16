@@ -47,7 +47,7 @@ if __name__ == "__main__":
                 print(packet)
                 
             if fd == serialfd:
-                readBytes(serialfd)
+                packet = readBytes(serialfd)
                 tun.write(packet)
                 print("________________________")
                 print("FROM SERIAL")
