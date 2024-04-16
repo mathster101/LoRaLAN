@@ -15,11 +15,16 @@ def openTun(tunName):
     return tun
 
 def readBytes(serialfd):
-    p64 = serialfd.readline()
-    if len(p64) == 0:
+    try:
+        p64 = serialfd.readline()
+        #print(len(p64), "Bytes recvd")
+        if len(p64) <= 2:
+            return b''
+        packet = base64.b64decode(p64)
+        #print(f"received {p64} --> {packet}")
+        return packet
+    except:
         return b''
-    packet = base64.b64decode(p64)
-    return packet    
 
 def sendBytes(data, serialfd):
     p64 = base64.b64encode(data)
@@ -28,7 +33,7 @@ def sendBytes(data, serialfd):
 
 if __name__ == "__main__":
     tun = openTun(b"tun0")
-    serialfd= serial.Serial('/dev/ttyUSB0', 115200, timeout=10)
+    serialfd= serial.Serial('/dev/ttyUSB0', 500000, timeout=10)
     while True:
         inputs = [tun, serialfd]
         outputs = []
