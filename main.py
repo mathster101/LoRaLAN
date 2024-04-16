@@ -48,6 +48,8 @@ if __name__ == "__main__":
                 
             if fd == serialfd:
                 packet = readBytes(serialfd)
+                if packet == b'':
+                    continue
                 tun.write(packet)
                 print("________________________")
                 print("FROM SERIAL")
